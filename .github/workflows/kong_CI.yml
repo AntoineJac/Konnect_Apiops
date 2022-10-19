@@ -76,7 +76,7 @@ jobs:
           echo "SERVICE_VERSION_ID=$serviceVersionId" >> $GITHUB_ENV
       - name: Get spec json
         run: |
-          inso export spec Konnect_ApiOps_Example --tags Konnect_ApiOps_Example --output openSpecs.yaml
+          inso export spec Konnect_ApiOps_Example --output openSpecs.yaml
           documentJson=$(jq -Rs '.' openSpecs.yaml)
           echo "DOCUMENT_JSON=$documentJson" >> $GITHUB_ENV
       - name: Post specs
