@@ -70,11 +70,21 @@ jobs:
         run: |
           controlPlaneId=$(curl 'https://eu.api.konghq.com/konnect-api/api/runtime_groups' -H 'authorization: Bearer ${{ secrets.KONNECT_TOKEN }}' | jq -r '.data[] | select(.name=="Konnect_ApiOps") | .id')
           echo "CONTROL_PLANE_ID=$controlPlaneId" >> $GITHUB_ENV
-      - name: Get EU Runtime ID
+      - name: Create and Get Service Spec Version
         run: |
-          curl -X 'POST' 'https://eu.api.konghq.com/konnect-api/api/service_versions' \
-          --data-raw '{"version":"v1","service_package":"${{ env.SERVICE_PACKAGE_ID }}","control_plane":"${{ env.CONTROL_PLANE_ID }}"}'
-          -H 'authorization: Bearer ${{ secrets.KONNECT_TOKEN }}'
+          serviceVersionId=$(curl -X 'POST' 'https://eu.api.konghq.com/konnect-api/api/service_versions' --data-raw '{"version":"v1","service_package":"${{ env.SERVICE_PACKAGE_ID }}","control_plane":"${{ env.CONTROL_PLANE_ID }}"}' -H 'authorization: Bearer ${{ secrets.KONNECT_TOKEN }}' | jq -r '.id')
+          echo "SERVICE_VERSION_ID=$serviceVersionId" >> $GITHUB_ENV
+      - name: Get spec json
+        run: |
+          inso export spec Konnect_ApiOps_Example --tags Konnect_ApiOps_Example --output openSpecs.yaml
+          documentJson=$(jq -Rs '.' openSpecs.yaml)
+          echo "DOCUMENT_JSON=$documentJson" >> $GITHUB_ENV
+      - name: Post specs
+        run: |
+          curl 'https://eu.api.konghq.com/konnect-api/api/service_versions/${{ env.SERVICE_VERSION_ID }}/documents' \
+          -H 'content-type: application/json' \
+          -H 'authorization: Bearer Bearer ${{ secrets.KONNECT_TOKEN }}' \
+          --data-raw '{"path":"/test.yaml","content":"${{ env.DOCUMENT_JSON }}","published":true}'
 
       # Get Dev Portal US ID
       - name: Get Dev Portal US ID
