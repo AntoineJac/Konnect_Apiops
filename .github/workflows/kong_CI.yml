@@ -83,7 +83,7 @@ jobs:
         run: |
           curl 'https://eu.api.konghq.com/konnect-api/api/service_versions/${{ env.SERVICE_VERSION_ID }}/documents' \
           -H 'content-type: application/json' \
-          -H 'authorization: Bearer Bearer ${{ secrets.KONNECT_TOKEN }}' \
+          -H 'authorization: Bearer ${{ secrets.KONNECT_TOKEN }}' \
           --data-raw '{"path":"/test.yaml","content":${{ env.DOCUMENT_JSON }},"published":true}'
 
       # Get Dev Portal US ID
