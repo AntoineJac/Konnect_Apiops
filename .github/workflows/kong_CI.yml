@@ -72,7 +72,7 @@ jobs:
           echo "CONTROL_PLANE_ID=$controlPlaneId" >> $GITHUB_ENV
       - name: Create and Get Service Spec Version
         run: |
-          serviceVersionId=$(curl -X 'POST' 'https://eu.api.konghq.com/konnect-api/api/service_versions' --data-raw '{"version":"v1","service_package":"${{ env.SERVICE_PACKAGE_ID }}","control_plane":"${{ env.CONTROL_PLANE_ID }}"}' -H 'authorization: Bearer ${{ secrets.KONNECT_TOKEN }}' | jq -r '.id')
+          serviceVersionId=$(curl -X 'POST' 'https://eu.api.konghq.com/konnect-api/api/service_versions' --data-raw '{"version":"v1","service_package":"${{ env.SERVICE_PACKAGE_ID }}","control_plane":"${{ env.CONTROL_PLANE_ID }}"}' -H 'content-type: application/json' -H 'authorization: Bearer ${{ secrets.KONNECT_TOKEN }}' | jq -r '.id')
           echo "SERVICE_VERSION_ID=$serviceVersionId" >> $GITHUB_ENV
       - name: Get spec json
         run: |
